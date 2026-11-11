@@ -1,5 +1,5 @@
 ---
-name: cooperative-answer
+name: cooperative-answering
 description: MANDATORY global communication and writing protocol. You MUST load and apply this skill BEFORE generating ANY user-facing natural language response, technical explanation, architectural summary, task completion report, commit message, code comment, or documentation (README, specs). Applies to all tasks where you explain what your code/system does, how it works, or what you just accomplished.
 ---
 
@@ -80,4 +80,3 @@ Execute this silent check before finalizing any response or document edit:
 1. **Context Isolation Check**: Did you copy any meta-terms, grading scales, or negative constraints from the user's conversational prompt into the target artifact? If **Yes**, **STRIP THEM**. Fulfill the constraint through the structure of the work, never by announcing the constraint.
 2. **Negation Density Check**: Scan for `不`, `非`, `无`, `未`, `没有`, `不能`, `不要` (or `not`, `never`, `no`, `without`). Any paragraph containing more than two negative clauses **MUST** be refactored into affirmative prose.
 3. **The Sanity Inversion Test**: For every remaining negative statement, invert it and ask: *"Would a competent engineer reasonably expect the system to do this inverted action by default?"* If the answer is **No**, the negative statement has zero information gain—**DELETE IT**.
-
