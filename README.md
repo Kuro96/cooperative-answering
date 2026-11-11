@@ -1,8 +1,14 @@
 # Cooperative Answering
 
-An agent skill for clear, concise, audience-focused communication, grounded in Paul Grice’s Cooperative Principle.
+English | [简体中文](README.zh-CN.md)
 
-The skill guides agents to explain behavior through concrete mechanisms, keep instructions separate from deliverables, and remove redundant or defensive phrasing. It includes Chinese and English examples for explanations, documentation, code comments, and completion reports.
+An agent skill for clear, audience-focused communication and fail-fast software engineering, grounded in Paul Grice’s Cooperative Principle.
+
+The skill covers writing, production code, error handling, and tests:
+
+- **Communication:** Explain behavior through concrete mechanisms, keep instructions separate from deliverables, and use concise, affirmative language. Chinese and English examples illustrate these principles.
+- **Error handling:** Propagate unexpected exceptions immediately. Handle specific exceptions at external I/O boundaries when implementing a specification-backed recovery strategy or adding context before re-raising.
+- **Testing:** Exercise real objects, state, and execution paths with minimal fixtures, focusing on regressions in production behavior.
 
 ## Installation
 
@@ -16,7 +22,7 @@ Replace `<skills-directory>` with the skill location supported by your agent. Th
 
 ## Usage
 
-Ask your agent to load `cooperative-answering` before writing a response or document. The skill’s description requests automatic activation for user-facing writing; activation depends on the host agent’s skill-loading behavior.
+Ask your agent to load `cooperative-answering` before building, testing, or explaining software. This includes writing responses, documentation, commit messages, and code comments, as well as modifying production code, error handling, tests, and fixtures. The skill’s description requests automatic activation for these tasks; activation depends on the host agent’s skill-loading behavior.
 
 ## Example
 

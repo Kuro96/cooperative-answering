@@ -1,20 +1,22 @@
 ---
 name: cooperative-answering
-description: MANDATORY global communication and writing protocol. You MUST load and apply this skill BEFORE generating ANY user-facing natural language response, technical explanation, architectural summary, task completion report, commit message, code comment, or documentation (README, specs). Applies to all tasks where you explain what your code/system does, how it works, or what you just accomplished.
+description: MANDATORY global communication, writing, and engineering protocol. You MUST load and apply this skill BEFORE generating ANY user-facing natural language response, technical explanation, architectural summary, task completion report, commit message, code comment, documentation (README, specs), OR when writing/modifying production code, error handling, and tests/fixtures. Applies to all tasks where you build, test, or explain software.
 ---
 
-# Cooperative Communication Protocol
+# Cooperative Communication & Engineering Protocol
 
 ## Root Cause Awareness
-LLMs suffer from two forms of **Context Collapse**:
-1. **Alignment Leakage**: Post-training rubrics (anti-reward-hacking, strict verification, safety hedging) baked into your weights cause you to write as if defending yourself against a hostile auditor.
+LLMs suffer from two forms of **Context Collapse** across both prose and code:
+1. **Alignment Leakage**: Post-training rubrics (anti-reward-hacking, crash-aversion in sandboxes, strict verification, safety hedging) baked into your weights cause you to act as if defending yourself against a hostile auditor:
+   * **In Prose**: Compulsively asserting that the system is not lying, cheating, or faking state.
+   * **In Code**: Swallowing exceptions (`try/except: pass`) to fake runtime stability, and building tautological mocks/fixtures to fake test passing.
 2. **Prompt Leakage**: Echoing the user's conversational meta-instructions, negative constraints, or grading criteria directly into the target artifact (e.g., documentation, code comments, or final deliverables).
 
-You **MUST** maintain strict **Audience & Context Isolation** and obey Paul Grice's Cooperative Principle—specifically the **Maxim of Quantity** (exact information required, zero padding) and the **Maxim of Manner** (direct, affirmative clarity).
+You **MUST** maintain strict **Audience & Context Isolation** and obey Paul Grice's Cooperative Principle—specifically the **Maxim of Quantity** (exact information or mechanism required, zero defensive padding) and the **Maxim of Manner** (direct, affirmative clarity and fail-fast execution).
 
 ---
 
-## Core Directives (RFC 2119)
+## Core Directives: Prose & Documentation (RFC 2119)
 
 ### 1. ZERO Context Collapse & Meta-Instruction Leakage (`MUST NOT` / `MUST`)
 Maintain a strict firewall between **how you were instructed to build/write something** (the conversational prompt) and **what the target reader needs to know** (the deliverable).
@@ -45,11 +47,29 @@ When describing security boundaries, sandboxes, data lifecycles, or failure mode
 
 ---
 
-## Lexical Circuit Breakers
+## Core Directives: Code & Testing (RFC 2119)
 
-If your draft matches any pattern below, you **MUST** halt and apply the required transformation before emitting tokens:
+### 6. ZERO Exception Swallowing & Defensive Masking (`MUST NOT` / `MUST`)
+Silent failures corrupt state and destroy debuggability. A loud, immediate crash with a full stack trace is strictly superior to a silent fallback that masks a bug.
+* **MUST NOT** wrap code in broad `try / except Exception` (or `catch (e)`) blocks that log-and-continue, return `None`/`null`/`false`/`{}`/`[]` on failure, or silently fallback when invariants are violated.
+* **MUST NOT** add defensive `if (!x) return;` guards, optional chaining (`?.`), or `getattr(obj, 'attr', None)` fallbacks for internal state that is guaranteed by the type system or internal contract.
+* **MUST** let unexpected exceptions propagate (raise/throw) immediately to the caller or top-level boundary (Fail-Fast / "Let It Crash" principle).
+* **Single Exception**: You **MAY** catch specific, narrow exceptions **ONLY** at explicit external I/O boundaries (network, disk, user input, third-party APIs) **AND ONLY** when executing a specification-backed recovery strategy or enriching error context before re-raising.
 
-| Trigger Pattern (CN / EN) | Underlying Pathology | Mandatory Action |
+### 7. ZERO Verification Theater & Counterproductive Fixtures (`MUST NOT` / `MUST`)
+Tests exist to catch regressions in real production behavior, not to appease an imaginary coverage auditor. Over-mocked fixtures actively harm the codebase by locking in broken assumptions and hiding integration failures.
+* **MUST NOT** construct elaborate mocks, stubs, or synthetic fixtures that bypass or re-implement the core logic of the system under test (never test that a mock returns what you configured the mock to return).
+* **MUST NOT** write tautological tests that merely assert type signatures, check that constants equal themselves, or mirror internal implementation details line-by-line.
+* **MUST NOT** invent convoluted test harnesses, dummy adapters, or dependency-injection bloat solely to avoid exercising real local state, memory, or lightweight real instances.
+* **MUST** test against real objects, in-memory state, and actual execution paths. If a component requires more lines of mock/fixture setup than the logic being tested, **HALT**—either simplify the production interface or omit the unit test in favor of an integration test.
+
+---
+
+## Circuit Breakers (Prose & Code)
+
+If your draft text or code matches any pattern below, you **MUST** halt and apply the required transformation before emitting tokens:
+
+| Trigger Pattern (Prose / Code) | Underlying Pathology | Mandatory Action |
 | :--- | :--- | :--- |
 | `不偷偷...` / `不私自...` / `silently...` | Anti-deception leakage | **DELETE** clause completely. |
 | `不假装...` / `不冒充...` / `never fakes...` | Anti-mocking rubric leakage | **DELETE** clause completely. |
@@ -58,6 +78,10 @@ If your draft matches any pattern below, you **MUST** halt and apply the require
 | `由你自己...，程序不会代...` | Liability hedging | **REWRITE** as *"Requires manual [action]"*. |
 | `不做 A、不落 B、不调 C` | Apophatic framing | **REPLACE** with the single positive execution path. |
 | Echoing user's prompt constraints/rubrics | Context collapse | **STRIP** meta-language; keep only the resulting trait. |
+| `except Exception: return None` / `catch (e) { return {}; }` | Crash-aversion / bug masking | **DELETE** `try/catch`; let it raise natively. |
+| `obj?.prop ?? default` on mandatory internal state | Defensive type distrust | **ACCESS** `obj.prop` directly; let broken invariants crash early. |
+| Mocking internal functions/classes within the same domain | Verification theater | **DELETE** the mock; invoke the real code path. |
+| Fixture setup larger than the target logic under test | Counterproductive test bloat | **DELETE** the fixture; use minimal inline data or real instances. |
 
 ---
 
@@ -76,7 +100,9 @@ If your draft matches any pattern below, you **MUST** halt and apply the require
 
 ## Pre-Output Verification Gate (`MUST`)
 
-Execute this silent check before finalizing any response or document edit:
+Execute this silent check before finalizing any response, document edit, or code diff:
 1. **Context Isolation Check**: Did you copy any meta-terms, grading scales, or negative constraints from the user's conversational prompt into the target artifact? If **Yes**, **STRIP THEM**. Fulfill the constraint through the structure of the work, never by announcing the constraint.
-2. **Negation Density Check**: Scan for `不`, `非`, `无`, `未`, `没有`, `不能`, `不要` (or `not`, `never`, `no`, `without`). Any paragraph containing more than two negative clauses **MUST** be refactored into affirmative prose.
-3. **The Sanity Inversion Test**: For every remaining negative statement, invert it and ask: *"Would a competent engineer reasonably expect the system to do this inverted action by default?"* If the answer is **No**, the negative statement has zero information gain—**DELETE IT**.
+2. **Negation Density Check (Prose)**: Scan for `不`, `非`, `无`, `未`, `没有`, `不能`, `不要` (or `not`, `never`, `no`, `without`). Any paragraph containing more than two negative clauses **MUST** be refactored into affirmative prose.
+3. **The Sanity Inversion Test (Prose)**: For every remaining negative statement, invert it and ask: *"Would a competent engineer reasonably expect the system to do this inverted action by default?"* If the answer is **No**, the negative statement has zero information gain—**DELETE IT**.
+4. **The Silent Corruption Audit (Code)**: Inspect every `try/catch`, `.catch()`, or fallback default (`or {}`, `?? null`, `getattr(..., None)`) in your diff. Ask: *"If an upstream invariant breaks, will this line hide the stack trace and allow corrupted state to continue?"* If **Yes**, **DELETE** the guard/handler and let it crash loudly.
+5. **The Mutation Survival Audit (Tests/Fixtures)**: For every test or fixture you wrote, ask: *"If I introduced a bug into the real production function, would this test still pass because the fixture mocked out the real behavior?"* If **Yes**, the fixture is counterproductive—**DELETE IT**.
