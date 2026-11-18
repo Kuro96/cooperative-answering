@@ -2,7 +2,7 @@
 name: cooperative-answering
 description: >-
   Mandatory protocol for user-facing communication, documentation, production
-  code, error handling, and tests. Apply it on every relevant turn. Reuse the
+  code, error handling, and tests. Reuse the
   full instructions while they are visible in the current context. If only the
   catalog entry or a summary is visible, load the skill before proceeding.
 ---
