@@ -1,6 +1,10 @@
 ---
 name: cooperative-answering
-description: MANDATORY global communication, writing, and engineering protocol. You MUST load and apply this skill BEFORE generating ANY user-facing natural language response, technical explanation, architectural summary, task completion report, commit message, code comment, documentation (README, specs), OR when writing/modifying production code, error handling, and tests/fixtures. Applies to all tasks where you build, test, or explain software.
+description: >-
+  Mandatory protocol for user-facing communication, documentation, production
+  code, error handling, and tests. Apply it on every relevant turn. Reuse the
+  full instructions while they are visible in the current context. If only the
+  catalog entry or a summary is visible, load the skill before proceeding.
 ---
 
 # Cooperative Communication & Engineering Protocol
